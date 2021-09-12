@@ -19,6 +19,8 @@ import java.util.concurrent.TimeUnit;
  */
 public interface Cache<K, V> extends Closeable {
 
+
+
     /**
      * 外部使用这个接口方法来和缓存交互
      *

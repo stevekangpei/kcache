@@ -1,7 +1,9 @@
 package com.kp.cache_core.core;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
+import com.kp.cache_core.exception.CacheException;
+
+import java.time.Duration;
+import java.util.concurrent.*;
 
 /**
  * 用于封装Cache的数据
@@ -32,5 +34,33 @@ public class CacheResult {
 
     public CacheResult(Throwable e) {
         this.future = CompletableFuture.completedFuture(new ResultData(e));
+    }
+
+
+    public void waitForResult(Duration timeOut) {
+        try {
+            ResultData resultData = this.future.toCompletableFuture().get(timeOut.toMillis(), TimeUnit.MILLISECONDS);
+            fetchResult(resultData);
+        } catch (Exception e) {
+            throw new CacheException("get error", e);
+        }
+    }
+
+    public void fetchResult(ResultData resultData) {
+        this.msg = resultData.getMsg();
+        this.code = resultData.getResultCode();
+    }
+
+    public void waitForResult() {
+        waitForResult(Duration.ofMillis(100));
+    }
+
+    public boolean isSuccess() {
+        return getCode() == ResultCode.SUCCESS;
+    }
+
+    public ResultCode getCode() {
+        waitForResult();
+        return this.code;
     }
 }
