@@ -1,16 +1,17 @@
 package com.kp.cache_core.embedded;
 
-import com.kp.cache_core.core.AbstractCache;
-import com.kp.cache_core.core.CacheResult;
-import com.kp.cache_core.core.CacheValueHolder;
+import com.kp.cache_core.core.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * description: AbstractEmbeddedCache <br>
@@ -39,6 +40,11 @@ public abstract class AbstractEmbeddedCache<K, V> extends AbstractCache<K, V> {
         Function<Object, Object> keyConvertor = config.getKeyConvertor();
         if (keyConvertor == null) return k;
         return keyConvertor.apply(k);
+    }
+
+    @Override
+    public CacheConfig<K, V> config() {
+        return config;
     }
 
     /**
@@ -70,6 +76,57 @@ public abstract class AbstractEmbeddedCache<K, V> extends AbstractCache<K, V> {
         }
         innerMap.putAllValues(data);
         return CacheResult.SUCCESS_WITHOUT_MSG;
+    }
+
+    @Override
+    protected CacheGetResult<V> do_Get(K k) {
+        Object key = buildKey(k);
+        CacheValueHolder value = (CacheValueHolder) innerMap.getValue(key);
+        return parseGetResult(value);
+    }
+
+    protected CacheGetResult<V> parseGetResult(CacheValueHolder value) {
+        long now = System.currentTimeMillis();
+
+        if (value == null) {
+            return new CacheGetResult<>(ResultCode.NOT_EXIST, "not exist");
+        } else if (now > value.getExpireTime()) {
+            return new CacheGetResult<>(ResultCode.EXPIRED, "expired");
+        } else if (config.isExpireAfterAccess()) {
+            long expireAccessTime = value.getAccessTime() + config.getExpireAfterAccess();
+            if (now > expireAccessTime) {
+                return new CacheGetResult<>(ResultCode.EXPIRED, "expired");
+            }
+        }
+        return new CacheGetResult<>(ResultCode.SUCCESS, "success", value);
+    }
+
+    @Override
+    protected MultiCacheGetResult<K, V> do_Get_All(List<K> keys) {
+        List<Object> newKeys = keys.stream().map(this::buildKey).collect(Collectors.toList());
+        Map<K, CacheGetResult<V>> res = new HashMap<>(keys.size());
+
+        for (int i = 0; i < newKeys.size(); i++) {
+            Object key = newKeys.get(i);
+            K k = keys.get(i);
+            CacheValueHolder value = (CacheValueHolder) innerMap.getValue(key);
+            CacheGetResult<V> v = parseGetResult(value);
+            res.put(k, v);
+        }
+        return new MultiCacheGetResult<>(ResultCode.SUCCESS, "", res);
+    }
+
+    @Override
+    protected CacheResult do_Delete_All(List<K> keys) {
+        Set newKeys = keys.stream().map(this::buildKey).collect(Collectors.toSet());
+        innerMap.removeAllValues(newKeys);
+        return CacheResult.SUCCESS_WITHOUT_MSG;
+    }
+
+    @Override
+    protected CacheResult do_Delete(K k) {
+        boolean b = innerMap.removeValue(buildKey(k));
+        return b ? CacheResult.SUCCESS_WITHOUT_MSG : CacheResult.FAIL_WITHOUT_MSG;
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.kp.cache_core.core;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 /**
@@ -12,6 +13,10 @@ import java.util.concurrent.CompletionStage;
  */
 public class MultiCacheGetResult<K, V> extends CacheResult {
     private Map<K, CacheValueHolder> res;
+
+    public MultiCacheGetResult(ResultCode code, String msg, Map<K, CacheGetResult<V>> values) {
+        super(CompletableFuture.completedFuture(new ResultData(code, msg, values)));
+    }
 
     public MultiCacheGetResult(ResultCode code, String msg) {
         super(code, msg);

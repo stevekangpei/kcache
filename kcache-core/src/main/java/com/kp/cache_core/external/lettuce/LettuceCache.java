@@ -1,10 +1,14 @@
 package com.kp.cache_core.external.lettuce;
 
+import com.kp.cache_core.core.CacheConfig;
+import com.kp.cache_core.core.CacheGetResult;
 import com.kp.cache_core.core.CacheResult;
+import com.kp.cache_core.core.MultiCacheGetResult;
 import com.kp.cache_core.external.AbstractExternalCache;
 import com.kp.cache_core.external.ExternalCacheConfig;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -16,7 +20,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class LettuceCache<K, V> extends AbstractExternalCache<K, V> {
 
-    private ExternalCacheConfig config;
+    private ExternalCacheConfig<K, V> config;
 
     public LettuceCache(ExternalCacheConfig<K, V> config) {
         super(config);
@@ -31,6 +35,31 @@ public class LettuceCache<K, V> extends AbstractExternalCache<K, V> {
     @Override
     protected CacheResult do_Put_All(Map<K, V> map, long expireAfterWrite, TimeUnit timeUnit) {
         return null;
+    }
+
+    @Override
+    protected CacheGetResult<V> do_Get(K k) {
+        return null;
+    }
+
+    @Override
+    protected MultiCacheGetResult<K, V> do_Get_All(List<K> keys) {
+        return null;
+    }
+
+    @Override
+    protected CacheResult do_Delete_All(List<K> keys) {
+        return null;
+    }
+
+    @Override
+    protected CacheResult do_Delete(K k) {
+        return null;
+    }
+
+    @Override
+    public CacheConfig<K, V> config() {
+        return this.config;
     }
 
     @Override

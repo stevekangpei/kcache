@@ -2,6 +2,7 @@ package com.kp.cache_core.core;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -19,6 +20,34 @@ import java.util.concurrent.TimeUnit;
  */
 public interface Cache<K, V> extends Closeable {
 
+    /**
+     * JSR-----107 Java code style
+     */
+
+
+    default V get(K k) {
+        CacheGetResult<V> v = GET(k);
+        if (v.isSuccess()) {
+            return v.getData();
+        }
+        return null;
+    }
+
+    default Map<K, V> getAll(List<K> keys) {
+        MultiCacheGetResult<K, V> result = GET_ALL(keys);
+        if (result.isSuccess()) {
+            return result.unWrapValues();
+        }
+        return null;
+    }
+
+    default boolean delete(K k) {
+        return DELETE(k).isSuccess();
+    }
+
+    default boolean deleteAll(List<K> keys) {
+        return DELETE_ALL(keys).isSuccess();
+    }
 
 
     /**
@@ -29,6 +58,8 @@ public interface Cache<K, V> extends Closeable {
     default void put(K k, V v, long expireAfterWrite, TimeUnit timeUnit) {
         PUT(k, v, expireAfterWrite, timeUnit);
     }
+
+    CacheConfig<K, V> config();
 
     /**
      * 内部接口的实现方法
@@ -42,7 +73,19 @@ public interface Cache<K, V> extends Closeable {
         PUT_ALL(map, expireAfterWrite, timeUnit);
     }
 
+
+
     CacheResult PUT_ALL(Map<K, V> map, long expireAfterWrite, TimeUnit timeUnit);
+
+
+    CacheResult DELETE_ALL(List<K> keys);
+
+    CacheResult DELETE(K k);
+
+    CacheGetResult<V> GET(K k);
+
+    MultiCacheGetResult<K, V> GET_ALL(List<K> keys);
+
 
     @Override
     void close() throws IOException;
