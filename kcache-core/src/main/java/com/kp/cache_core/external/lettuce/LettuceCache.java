@@ -1,16 +1,16 @@
 package com.kp.cache_core.external.lettuce;
 
-import com.kp.cache_core.core.CacheConfig;
-import com.kp.cache_core.core.CacheGetResult;
-import com.kp.cache_core.core.CacheResult;
-import com.kp.cache_core.core.MultiCacheGetResult;
+import com.kp.cache_core.core.*;
 import com.kp.cache_core.external.AbstractExternalCache;
-import com.kp.cache_core.external.ExternalCacheConfig;
+import io.lettuce.core.AbstractRedisClient;
+import io.lettuce.core.RedisFuture;
+import io.lettuce.core.api.async.RedisStringAsyncCommands;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 /**
  * description: LettuceCache <br>
@@ -20,17 +20,50 @@ import java.util.concurrent.TimeUnit;
  */
 public class LettuceCache<K, V> extends AbstractExternalCache<K, V> {
 
-    private ExternalCacheConfig<K, V> config;
+    private LettuceCacheConfig<K, V> config;
 
-    public LettuceCache(ExternalCacheConfig<K, V> config) {
+    private Function<Object, byte[]> encoder;
+    private Function<byte[], Object> decoder;
+    private final AbstractRedisClient client;
+    /**
+     * 异步命令
+     */
+    private RedisStringAsyncCommands<byte[], byte[]> stringAsyncCommands;
+
+
+    public LettuceCache(LettuceCacheConfig<K, V> config) {
         super(config);
         this.config = config;
+        this.encoder = config.getEncoder();
+        this.decoder = config.getDecoder();
+        this.client = config.getClient();
+
     }
 
     @Override
     protected CacheResult do_Put(K k, V v, long expireAfterWrite, TimeUnit timeUnit) {
-        return null;
+        try {
+            CacheValueHolder holder = new CacheValueHolder(v, timeUnit.toMillis(expireAfterWrite));
+            byte[] key = buildKey(k);
+            RedisFuture<String> future = stringAsyncCommands.psetex(key, timeUnit.toMillis(expireAfterWrite), encoder.apply(holder));
+            CacheResult cacheResult = new CacheResult(future.handle((res, ex) -> {
+                if (ex != null) {
+                    return new ResultData(ex);
+                } else {
+                    if ("OK".equalsIgnoreCase(res)) {
+                        return new ResultData(ResultCode.SUCCESS, "", null);
+                    } else {
+                        return new ResultData(ResultCode.FAIL, "", null);
+                    }
+                }
+            }));
+
+            return cacheResult;
+        } catch (Exception e) {
+            return new CacheResult(e);
+        }
     }
+
 
     @Override
     protected CacheResult do_Put_All(Map<K, V> map, long expireAfterWrite, TimeUnit timeUnit) {
