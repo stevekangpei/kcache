@@ -31,7 +31,7 @@ public class CacheConfig<K, V> implements Cloneable {
     private Duration penetrationTimeOut;
 
     @Override
-    protected Object clone() {
+    public Object clone() {
         try {
             return super.clone();
         } catch (CloneNotSupportedException e) {
