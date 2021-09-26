@@ -1,6 +1,11 @@
 package com.kp.kcache.autoconfigure.autoconfiguration;
 
+import com.kp.cache_core.cache_builder.ICacheBuilder;
+import com.kp.kcache.autoconfigure.support.CacheConfigTree;
+import com.kp.kcache.autoconfigure.support.CacheContainer;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.ConfigurableEnvironment;
 
 /**
  * 用于初始化Cache。
@@ -15,8 +20,34 @@ import org.springframework.beans.factory.InitializingBean;
  */
 public abstract class AbstractCacheInitializer implements InitializingBean {
 
+    @Autowired
+    private ConfigurableEnvironment environment;
+    @Autowired
+    private CacheContainer cacheContainer;
+
+    private volatile boolean initted;
+
+    private String[] cacheNames;
+
+    public AbstractCacheInitializer(String... cacheNames) {
+        this.cacheNames = cacheNames;
+    }
+
     @Override
     public void afterPropertiesSet() throws Exception {
+        if (!initted) {
+
+            initted = true;
+        }
+    }
+
+    private void parseCache(String prefix) {
 
     }
+
+    protected void parseBasicConfigInfo(CacheConfigTree configTree, String prefix, ICacheBuilder cacheBuilder) {
+
+    }
+
+    protected abstract ICacheBuilder buildCache(CacheConfigTree configTree);
 }

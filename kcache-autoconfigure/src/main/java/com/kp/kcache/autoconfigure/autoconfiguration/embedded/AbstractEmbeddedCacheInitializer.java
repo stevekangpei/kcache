@@ -8,5 +8,9 @@ import com.kp.kcache.autoconfigure.autoconfiguration.AbstractCacheInitializer;
  * author: kangpei <br>
  * version: 1.0 <br>
  */
-public class AbstractEmbeddedCacheInitializer extends AbstractCacheInitializer {
+public abstract class AbstractEmbeddedCacheInitializer extends AbstractCacheInitializer {
+
+    public AbstractEmbeddedCacheInitializer(String... cacheNames) {
+        super(cacheNames);
+    }
 }
