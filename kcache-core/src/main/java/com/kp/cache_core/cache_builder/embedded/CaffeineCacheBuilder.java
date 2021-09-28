@@ -9,9 +9,9 @@ import com.kp.cache_core.embedded.EmbeddedCaffineCache;
  * author: kangpei <br>
  * version: 1.0 <br>
  */
-public class CaffineCacheBuilder extends EmbeddedCacheBuilder {
+public class CaffeineCacheBuilder extends EmbeddedCacheBuilder {
 
-    public CaffineCacheBuilder() {
+    public CaffeineCacheBuilder() {
         this.setBuildFunc((cacheConfig) -> new EmbeddedCaffineCache((EmbeddedCacheConfig) cacheConfig));
     }
 

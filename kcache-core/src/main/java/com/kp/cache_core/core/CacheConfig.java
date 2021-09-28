@@ -1,6 +1,8 @@
 package com.kp.cache_core.core;
 
 import com.kp.cache_core.exception.CacheException;
+import com.kp.cache_core.support.AbstractDecoder;
+import com.kp.cache_core.support.AbstractEncoder;
 
 import java.time.Duration;
 import java.util.function.Function;
@@ -18,6 +20,9 @@ public class CacheConfig<K, V> implements Cloneable {
     private long expireAfterWriteInMillis = DEFAULT_MAX_EXPIRE * 1000;
     private long expireAfterAccess;
     private Function<Object, Object> keyConvertor;
+
+    private AbstractEncoder encoder;
+    private AbstractDecoder decoder;
 
     private boolean cacheNullValues;
 
@@ -37,6 +42,22 @@ public class CacheConfig<K, V> implements Cloneable {
         } catch (CloneNotSupportedException e) {
             throw new CacheException(e);
         }
+    }
+
+    public AbstractEncoder getEncoder() {
+        return encoder;
+    }
+
+    public void setEncoder(AbstractEncoder encoder) {
+        this.encoder = encoder;
+    }
+
+    public AbstractDecoder getDecoder() {
+        return decoder;
+    }
+
+    public void setDecoder(AbstractDecoder decoder) {
+        this.decoder = decoder;
     }
 
     public long getExpireAfterWriteInMillis() {

@@ -21,4 +21,8 @@ public final class EncodeFactory {
         ENCODERS.put("java", JAVA_ENCODER_INSTANCE);
         ENCODERS.put("kryo", KRYO_ENCODER_INSTANCE);
     }
+
+    public static AbstractEncoder getEncoderByKey(String key) {
+        return ENCODERS.get(key);
+    }
 }

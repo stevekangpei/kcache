@@ -39,6 +39,21 @@ public class CacheConfigTree {
         return res;
     }
 
+
+    public Object getProperty(String key) {
+        String fullPrefix = fullPrefixOfKey(key);
+        return this.environment.getProperty(fullPrefix);
+    }
+
+    public Object getProperty(String key, Object defaultValue) {
+        String fullPrefix = fullPrefixOfKey(key);
+        if (this.environment.containsProperty(fullPrefix)) {
+            return this.environment.getProperty(fullPrefix);
+        }
+        return defaultValue;
+    }
+
+
     public String fullPrefixOfKey(String prefix) {
         return this.prefix + prefix;
     }

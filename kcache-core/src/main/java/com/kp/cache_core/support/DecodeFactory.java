@@ -20,4 +20,9 @@ public final class DecodeFactory {
         DECODERS.put("java", JAVA_DECODER_INSTANCE);
         DECODERS.put("kryo", KRYO_DECODER);
     }
+
+    public static AbstractDecoder getDecoderByKey(String key) {
+        return DECODERS.get(key);
+    }
+
 }

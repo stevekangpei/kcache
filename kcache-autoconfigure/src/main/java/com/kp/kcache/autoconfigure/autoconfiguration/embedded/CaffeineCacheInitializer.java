@@ -1,6 +1,7 @@
 package com.kp.kcache.autoconfigure.autoconfiguration.embedded;
 
 import com.kp.cache_core.cache_builder.ICacheBuilder;
+import com.kp.cache_core.cache_builder.embedded.CaffeineCacheBuilder;
 import com.kp.kcache.autoconfigure.condition.CaffeineCondition;
 import com.kp.kcache.autoconfigure.support.CacheConfigTree;
 import org.springframework.context.annotation.Conditional;
@@ -22,6 +23,8 @@ public class CaffeineCacheInitializer extends AbstractEmbeddedCacheInitializer {
 
     @Override
     protected ICacheBuilder buildCache(CacheConfigTree configTree) {
-        return null;
+        CaffeineCacheBuilder caffeineCacheBuilder = new CaffeineCacheBuilder();
+        super.parseBasicConfigInfo(configTree, caffeineCacheBuilder);
+        return caffeineCacheBuilder;
     }
 }
