@@ -2,8 +2,8 @@ package com.kp.cache_core.cache_builder.external;
 
 import com.kp.cache_core.cache_builder.AbstractCacheBuilder;
 import com.kp.cache_core.external.ExternalCacheConfig;
-
-import java.util.function.Function;
+import com.kp.cache_core.support.AbstractDecoder;
+import com.kp.cache_core.support.AbstractEncoder;
 
 /**
  * description: ExternalCacheBuilder <br>
@@ -25,11 +25,11 @@ public class ExternalCacheBuilder extends AbstractCacheBuilder {
         getConfig().setKeyPrefix(keyPrefix);
     }
 
-    public void setValueEncoder(Function<Object, byte[]> encoder) {
+    public void setValueEncoder(AbstractEncoder encoder) {
         getConfig().setEncoder(encoder);
     }
 
-    public void setValueDecoder(Function<byte[], Object> decoder) {
+    public void setValueDecoder(AbstractDecoder decoder) {
         getConfig().setDecoder(decoder);
     }
 }

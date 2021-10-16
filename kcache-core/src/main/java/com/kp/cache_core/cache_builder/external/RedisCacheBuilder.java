@@ -14,4 +14,12 @@ public class RedisCacheBuilder extends ExternalCacheBuilder {
     public RedisCacheBuilder() {
         this.setBuildFunc((cacheConfig) -> new RedisCache((RedisCacheConfig) cacheConfig));
     }
+
+    @Override
+    public RedisCacheConfig getConfig() {
+        if (config == null) {
+            config = new RedisCacheConfig();
+        }
+        return (RedisCacheConfig) config;
+    }
 }

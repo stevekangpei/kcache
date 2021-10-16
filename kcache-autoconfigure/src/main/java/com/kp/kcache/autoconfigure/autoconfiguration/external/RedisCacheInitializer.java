@@ -1,6 +1,7 @@
 package com.kp.kcache.autoconfigure.autoconfiguration.external;
 
 import com.kp.cache_core.cache_builder.ICacheBuilder;
+import com.kp.cache_core.cache_builder.external.RedisCacheBuilder;
 import com.kp.cache_core.exception.CacheException;
 import com.kp.kcache.autoconfigure.condition.RedisCacheCondition;
 import com.kp.kcache.autoconfigure.support.CacheConfigTree;
@@ -10,9 +11,14 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisSentinelPool;
+import redis.clients.jedis.util.Pool;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.HashSet;
 import java.util.Map;
 
 /**
@@ -33,24 +39,48 @@ public class RedisCacheInitializer extends AbstractExternalCacheInitializer {
     protected ICacheBuilder buildCache(CacheConfigTree configTree) {
         GenericObjectPoolConfig poolConfig = parsePoolConfig(configTree);
 
+        if (configTree.getProperty("host") == null || configTree.getProperty("port") == null) {
+            throw new CacheException("redis config info host or port must be defined");
+        }
         String host = (String) configTree.getProperty("host");
         int port = Integer.parseInt((String) configTree.getProperty("port"));
-        int database = Integer.parseInt((String) configTree.getProperty("db"));
+        int database = Integer.parseInt((String) configTree.getProperty("db", "0"));
         String password = (String) configTree.getProperty("password");
-        return null;
+        int timeOut = Integer.parseInt((String) configTree.getProperty("timeOut", "2000"));
+        String clientName = (String) configTree.getProperty("clientName", null);
+        boolean ssl = Boolean.parseBoolean((String) configTree.getProperty("ssl", "False"));
+
+        String master = (String) configTree.getProperty("master");
+        String sentinel = (String) configTree.getProperty("sentinel");
+        Pool<Jedis> pool;
+
+        if (sentinel == null) {
+            pool = new JedisPool(poolConfig, host, port, timeOut, password, database, clientName, ssl);
+        } else {
+            String[] strings = sentinel.split(",");
+            HashSet<String> sentinelsSet = new HashSet<>();
+            for (String s : strings) {
+                if (s != null && !s.trim().equals("")) {
+                    sentinelsSet.add(s.trim());
+                }
+            }
+            pool = new JedisSentinelPool(master, sentinelsSet, poolConfig, timeOut, password, database, clientName);
+        }
+        RedisCacheBuilder redisCacheBuilder = new RedisCacheBuilder();
+        parseBasicConfigInfo(configTree, redisCacheBuilder);
+        redisCacheBuilder.getConfig().setJedisPool(pool);
+        redisCacheBuilder.getConfig().setSlaveWeights(null);
+        redisCacheBuilder.getConfig().setReadFromSlaves(false);
+        redisCacheBuilder.getConfig().setSlaves(null);
+
+        return redisCacheBuilder;
     }
 
     private GenericObjectPoolConfig parsePoolConfig(CacheConfigTree configTree) {
         try {
-            // Spring Boot 2.0 removed RelaxedDataBinder class. Binder class not exists in 1.X
             if (ClassUtils.isPresent("org.springframework.boot.context.properties.bind.Binder",
                     this.getClass().getClassLoader())) {
-                // Spring Boot 2.0+
                 String prefix = configTree.subTree("poolConfig").getPrefix().toLowerCase();
-
-                // invoke following code by reflect
-                // Binder binder = Binder.get(environment);
-                // return binder.bind(name, Bindable.of(GenericObjectPoolConfig.class)).get();
 
                 Class<?> binderClass = Class.forName("org.springframework.boot.context.properties.bind.Binder");
                 Class<?> bindableClass = Class.forName("org.springframework.boot.context.properties.bind.Bindable");
@@ -67,10 +97,6 @@ public class RedisCacheInitializer extends AbstractExternalCacheInitializer {
                 // Spring Boot 1.X
                 GenericObjectPoolConfig poolConfig = new GenericObjectPoolConfig();
                 Map<String, Object> props = configTree.subTree("poolConfig.").getProperties();
-
-                // invoke following code by reflect
-                //RelaxedDataBinder binder = new RelaxedDataBinder(poolConfig);
-                //binder.bind(new MutablePropertyValues(props));
 
                 Class<?> relaxedDataBinderClass = Class.forName("org.springframework.boot.bind.RelaxedDataBinder");
                 Class<?> mutablePropertyValuesClass = Class.forName("org.springframework.beans.MutablePropertyValues");

@@ -14,4 +14,13 @@ public class RedisLettuceBuilder extends ExternalCacheBuilder {
     public RedisLettuceBuilder() {
         this.setBuildFunc(cacheConfig -> new LettuceCache((LettuceCacheConfig) cacheConfig));
     }
+
+    @Override
+    public LettuceCacheConfig getConfig() {
+        if (config == null) {
+            config = new LettuceCacheConfig();
+        }
+        return (LettuceCacheConfig) config;
+    }
+
 }

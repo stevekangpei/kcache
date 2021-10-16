@@ -10,7 +10,7 @@ import com.kp.cache_core.support.AbstractEncoder;
 import com.kp.cache_core.support.DecodeFactory;
 import com.kp.cache_core.support.EncodeFactory;
 import com.kp.kcache.autoconfigure.support.CacheConfigTree;
-import com.kp.kcache.autoconfigure.support.CacheContainer;
+import com.kp.kcache.autoconfigure.support.CacheBuilderContainer;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -40,7 +40,7 @@ public abstract class AbstractCacheInitializer implements InitializingBean {
     @Autowired
     protected ConfigurableEnvironment environment;
     @Autowired
-    private CacheContainer cacheContainer;
+    private CacheBuilderContainer cacheContainer;
 
     private volatile boolean initted;
 
@@ -72,9 +72,9 @@ public abstract class AbstractCacheInitializer implements InitializingBean {
             CacheConfigTree subTree = cacheConfigTree.subTree(cacheArea + "." + cacheType);
             ICacheBuilder cacheBuilder = buildCache(subTree);
             if (isLocal) {
-                cacheContainer.addEmbeddedContainer(cacheType, (EmbeddedCacheBuilder) cacheBuilder);
+                cacheContainer.addEmbeddedContainer(cacheArea + "." + cacheType, (EmbeddedCacheBuilder) cacheBuilder);
             } else {
-                cacheContainer.addExternalContainer(cacheType, (ExternalCacheBuilder) cacheBuilder);
+                cacheContainer.addExternalContainer(cacheArea + "." + cacheType, (ExternalCacheBuilder) cacheBuilder);
             }
         }
     }

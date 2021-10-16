@@ -1,8 +1,8 @@
 package com.kp.cache_core.external;
 
 import com.kp.cache_core.core.CacheConfig;
-
-import java.util.function.Function;
+import com.kp.cache_core.support.AbstractDecoder;
+import com.kp.cache_core.support.AbstractEncoder;
 
 /**
  * description: ExternalCacheConfig <br>
@@ -13,8 +13,8 @@ import java.util.function.Function;
 public class ExternalCacheConfig<K, V> extends CacheConfig<K, V> {
 
     private String keyPrefix;
-    private Function<Object, byte[]> encoder;
-    private Function<byte[], Object> decoder;
+    private AbstractEncoder encoder;
+    private AbstractDecoder decoder;
 
     public String getKeyPrefix() {
         return keyPrefix;
@@ -24,19 +24,19 @@ public class ExternalCacheConfig<K, V> extends CacheConfig<K, V> {
         this.keyPrefix = keyPrefix;
     }
 
-    public Function<Object, byte[]> getEncoder() {
+    public AbstractEncoder getEncoder() {
         return encoder;
     }
 
-    public void setEncoder(Function<Object, byte[]> encoder) {
+    public void setEncoder(AbstractEncoder encoder) {
         this.encoder = encoder;
     }
 
-    public Function<byte[], Object> getDecoder() {
+    public AbstractDecoder getDecoder() {
         return decoder;
     }
 
-    public void setDecoder(Function<byte[], Object> decoder) {
+    public void setDecoder(AbstractDecoder decoder) {
         this.decoder = decoder;
     }
 

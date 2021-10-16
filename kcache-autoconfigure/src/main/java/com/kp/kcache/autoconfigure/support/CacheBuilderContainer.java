@@ -15,7 +15,7 @@ import java.util.Map;
  * version: 1.0 <br>
  */
 @Component
-public class CacheContainer {
+public class CacheBuilderContainer {
 
     private Map<String, EmbeddedCacheBuilder> embeddedCacheBuilderMap = new HashMap<>();
 
@@ -28,6 +28,14 @@ public class CacheContainer {
     public EmbeddedCacheBuilder getEmbeddedCacheBuilder(String key) {
         if (StringUtils.isEmpty(key)) return null;
         return this.embeddedCacheBuilderMap.get(key);
+    }
+
+    public Map<String, EmbeddedCacheBuilder> getAllEmbeddedBuilders() {
+        return this.embeddedCacheBuilderMap;
+    }
+
+    public Map<String, ExternalCacheBuilder> getAllExternalBuilders() {
+        return this.externalCacheBuilderMap;
     }
 
     public ExternalCacheBuilder getExternalCacheBuilder(String key) {
