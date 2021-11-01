@@ -10,6 +10,7 @@ import com.kp.kcache.autoconfigure.support.KCacheCommonProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
 
 /**
@@ -24,6 +25,7 @@ import org.springframework.context.annotation.Import;
         RedisCacheInitializer.class,
         RedisLettuceCacheInitializer.class
 })
+@EnableAspectJAutoProxy
 public class KCacheAutoconfiguraton {
     public static final String cacheInitializerName = "cache.globalCacheConfig";
 
