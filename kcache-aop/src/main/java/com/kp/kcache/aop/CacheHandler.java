@@ -1,7 +1,17 @@
 package com.kp.kcache.aop;
 
+import com.kp.cache_core.exception.CacheException;
+import com.kp.kcache.anno_config.CacheEvictAnnoConfig;
+import com.kp.kcache.anno_config.CacheUpdateAnnoConfig;
+import com.kp.kcache.anno_config.CacheableAnnoConfig;
+import com.kp.kcache.annos.AllowPenetration;
+import com.kp.kcache.annos.CacheEvict;
+import com.kp.kcache.annos.CacheUpdate;
+import com.kp.kcache.annos.Cacheable;
 import com.kp.kcache.aop.support.AnnoConfigContainer;
+import com.kp.kcache.aop.support.AnnoConfigUtils;
 import com.kp.kcache.aop.support.AopUtils;
+import com.kp.kcache.aop.support.CacheContext;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -12,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.BridgeMethodResolver;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.ClassUtils;
 
 import java.lang.reflect.Method;
@@ -42,21 +53,96 @@ public class CacheHandler {
     private AnnoConfigContainer annoConfigContainer;
 
     @Around("cacheablePointCut()")
-    public Object cacheable(ProceedingJoinPoint joinPoint) {
+    public Object cacheable(ProceedingJoinPoint joinPoint) throws Exception {
         Method method = getSpecificMethod(joinPoint);
         Class<?> targetClass = AopProxyUtils.ultimateTargetClass(joinPoint.getTarget());
-        String annoKey = AopUtils.getKey(method, targetClass);
 
+        try {
+            String annoKey = AopUtils.getKey(method, targetClass);
+            CacheableAnnoConfig cacheableConfig = annoConfigContainer.getCacheableConfigByKey(annoKey);
+
+            if (cacheableConfig == null) {
+                Cacheable cacheable = AnnotationUtils.findAnnotation(method, Cacheable.class);
+                AllowPenetration penetration = AnnotationUtils.findAnnotation(method, AllowPenetration.class);
+                assert cacheable != null;
+                cacheableConfig = AnnoConfigUtils.parseCacheableAnnoConfig(method, cacheable, penetration);
+                annoConfigContainer.add2CacheableMap(annoKey, cacheableConfig);
+            }
+
+            CacheContext context = new CacheContext();
+            context.setArgs(joinPoint.getArgs());
+            context.setCacheAnnoConfig(cacheableConfig);
+            context.setMethod(method);
+            context.setTargetObject(joinPoint.getTarget());
+            context.setInvoker(joinPoint::proceed);
+
+            return context.getResult();
+        } catch (Exception e) {
+            logger.error("cacheablePointCut error, method {}, ", method, e);
+            throw new CacheException("cacheablePointCut");
+        }
     }
 
 
     @Around("cacheEvictPointCut()")
     public Object cacheEvict(ProceedingJoinPoint joinPoint) {
+        Method method = getSpecificMethod(joinPoint);
+        Class<?> targetClass = AopProxyUtils.ultimateTargetClass(joinPoint.getTarget());
+
+        try {
+            String annoKey = AopUtils.getKey(method, targetClass);
+            CacheEvictAnnoConfig evictAnnoConfig = annoConfigContainer.getCacheEvictConfigByKey(annoKey);
+
+            if (evictAnnoConfig == null) {
+                CacheEvict cacheEvict = AnnotationUtils.findAnnotation(method, CacheEvict.class);
+                assert cacheEvict != null;
+                evictAnnoConfig = AnnoConfigUtils.parseCacheEvictConfig(method, cacheEvict);
+                annoConfigContainer.add2CacheEvictMap(annoKey, evictAnnoConfig);
+            }
+
+            CacheContext context = new CacheContext();
+            context.setArgs(joinPoint.getArgs());
+            context.setCacheAnnoConfig(evictAnnoConfig);
+            context.setMethod(method);
+            context.setTargetObject(joinPoint.getTarget());
+            context.setInvoker(joinPoint::proceed);
+
+            return context.getResult();
+        } catch (Exception e) {
+            logger.error("cacheEvictPointCut error, method {}, ", method, e);
+            throw new CacheException("cacheEvictPointCut");
+        }
 
     }
 
     @Around("cacheUpdatePointCut()")
     public Object cacheUpdate(ProceedingJoinPoint joinPoint) {
+        Method method = getSpecificMethod(joinPoint);
+        Class<?> targetClass = AopProxyUtils.ultimateTargetClass(joinPoint.getTarget());
+
+        try {
+            String annoKey = AopUtils.getKey(method, targetClass);
+            CacheUpdateAnnoConfig updateAnnoConfig = annoConfigContainer.getCacheUpdateConfigByKey(annoKey);
+
+            if (updateAnnoConfig == null) {
+                CacheUpdate cacheUpdate = AnnotationUtils.findAnnotation(method, CacheUpdate.class);
+                assert cacheUpdate != null;
+                updateAnnoConfig = AnnoConfigUtils.parseCacheUpdateConfig(method, cacheUpdate);
+                annoConfigContainer.add2CacheUpdateMap(annoKey, updateAnnoConfig);
+            }
+
+            CacheContext context = new CacheContext();
+            context.setArgs(joinPoint.getArgs());
+            context.setCacheAnnoConfig(updateAnnoConfig);
+            context.setMethod(method);
+            context.setTargetObject(joinPoint.getTarget());
+            context.setInvoker(joinPoint::proceed);
+
+            return context.getResult();
+        } catch (Exception e) {
+            logger.error("cacheUpdatePointCut error, method {}, ", method, e);
+            throw new CacheException("cacheUpdatePointCut");
+        }
 
     }
 

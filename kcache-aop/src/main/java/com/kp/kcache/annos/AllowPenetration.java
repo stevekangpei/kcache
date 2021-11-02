@@ -1,6 +1,7 @@
 package com.kp.kcache.annos;
 
 import java.lang.annotation.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * description: AllowPenertation <br>
@@ -12,4 +13,8 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface AllowPenetration {
+
+    int timeOut() default 0;
+
+    TimeUnit timeUnit() default TimeUnit.MILLISECONDS;
 }

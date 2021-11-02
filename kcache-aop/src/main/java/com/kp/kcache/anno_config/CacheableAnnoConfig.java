@@ -16,10 +16,19 @@ public class CacheableAnnoConfig extends CacheAnnoConfig {
 
     private int localExpire;
 
-
     private boolean cacheNullValues;
 
     private int localLimit;
+
+    private PenetrationConfig penetrationConfig;
+
+    public PenetrationConfig getPenetrationConfig() {
+        return penetrationConfig;
+    }
+
+    public void setPenetrationConfig(PenetrationConfig penetrationConfig) {
+        this.penetrationConfig = penetrationConfig;
+    }
 
     public TimeUnit getTimeUnit() {
         return timeUnit;

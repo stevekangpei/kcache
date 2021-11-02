@@ -78,12 +78,5 @@ public @interface Cacheable {
      */
     boolean cacheNullValues() default false;
 
-    /**
-     * cache 条件
-     *
-     * @return
-     */
-    String condition() default "";
-
     int localLimit() default LOCAL_LIMIT;
 }

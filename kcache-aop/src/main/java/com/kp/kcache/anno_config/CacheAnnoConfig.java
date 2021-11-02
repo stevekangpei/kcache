@@ -23,10 +23,6 @@ public class CacheAnnoConfig {
      * cache key
      */
     private String key;
-    /**
-     * cache condition
-     */
-    private String condition;
 
 
     private Cache<?, ?> cache;
@@ -64,14 +60,6 @@ public class CacheAnnoConfig {
 
     public void setKey(String key) {
         this.key = key;
-    }
-
-    public String getCondition() {
-        return condition;
-    }
-
-    public void setCondition(String condition) {
-        this.condition = condition;
     }
 
     public Cache<?, ?> getCache() {

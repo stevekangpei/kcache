@@ -15,5 +15,5 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Import({KCacheAutoconfiguraton.class})
-public @interface EnableCacheKCache {
+public @interface EnableCreateKCache {
 }
