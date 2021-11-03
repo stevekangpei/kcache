@@ -1,7 +1,6 @@
 package com.kp.cache_core.cache_builder;
 
 import com.kp.cache_core.core.Cache;
-import com.kp.cache_core.core.CacheConfig;
 
 /**
  * description: ICacheBuilder <br>
@@ -11,5 +10,5 @@ import com.kp.cache_core.core.CacheConfig;
  */
 public interface ICacheBuilder {
 
-    <K, V> Cache<K, V> buildCache(CacheConfig<K, V> config);
+    <K, V> Cache<K, V> buildCache();
 }

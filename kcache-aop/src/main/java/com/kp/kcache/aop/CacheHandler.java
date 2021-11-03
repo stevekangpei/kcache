@@ -75,7 +75,7 @@ public class CacheHandler {
             context.setMethod(method);
             context.setTargetObject(joinPoint.getTarget());
             context.setInvoker(joinPoint::proceed);
-            context.setCacheBuilder(CacheBuilder.buildCache(context, cacheableConfig));
+            context.setCacheBuilder(CacheBuilder.buildCache());
             cacheExecutor.invokeCacheable(context);
 
             return context.getResult();
@@ -107,7 +107,7 @@ public class CacheHandler {
             context.setCacheAnnoConfig(evictAnnoConfig);
             context.setMethod(method);
             context.setTargetObject(joinPoint.getTarget());
-            context.setCacheBuilder(CacheBuilder.buildCache(context, evictAnnoConfig));
+            context.setCacheBuilder(CacheBuilder.buildCache());
             context.setInvoker(joinPoint::proceed);
             cacheExecutor.invokeCacheable(context);
 
@@ -139,7 +139,7 @@ public class CacheHandler {
             context.setArgs(joinPoint.getArgs());
             context.setCacheAnnoConfig(updateAnnoConfig);
             context.setMethod(method);
-            context.setCacheBuilder(CacheBuilder.buildCache(context, updateAnnoConfig));
+            context.setCacheBuilder(CacheBuilder.buildCache());
             context.setTargetObject(joinPoint.getTarget());
             context.setInvoker(joinPoint::proceed);
             cacheExecutor.invokeCacheable(context);

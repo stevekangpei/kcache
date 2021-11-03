@@ -23,8 +23,17 @@ public class AnnoConfigContainer {
 
     private Map<String, CacheUpdateAnnoConfig> cacheUpdateAnnoConfigMap = new ConcurrentHashMap<>(256);
 
+    public Map<String, CacheableAnnoConfig> cacheableAnnoConfigMapByArea = new ConcurrentHashMap<>(256);
+
+    public CacheableAnnoConfig getCacheableConfigByAreaAndName(String area, String name) {
+        String areaName = area + "_" + name;
+        return cacheableAnnoConfigMapByArea.get(areaName);
+    }
+
     public void add2CacheableMap(String key, CacheableAnnoConfig cacheableAnnoConfig) {
         this.cacheableAnnoConfigMap.put(key, cacheableAnnoConfig);
+        String areaName = cacheableAnnoConfig.getArea() + "_" + cacheableAnnoConfig.getName();
+        this.cacheableAnnoConfigMapByArea.put(areaName, cacheableAnnoConfig);
     }
 
     public CacheableAnnoConfig getCacheableConfigByKey(String key) {
