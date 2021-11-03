@@ -8,10 +8,7 @@ import com.kp.kcache.annos.AllowPenetration;
 import com.kp.kcache.annos.CacheEvict;
 import com.kp.kcache.annos.CacheUpdate;
 import com.kp.kcache.annos.Cacheable;
-import com.kp.kcache.aop.support.AnnoConfigContainer;
-import com.kp.kcache.aop.support.AnnoConfigUtils;
-import com.kp.kcache.aop.support.AopUtils;
-import com.kp.kcache.aop.support.CacheContext;
+import com.kp.kcache.aop.support.*;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -52,6 +49,9 @@ public class CacheHandler {
     @Autowired
     private AnnoConfigContainer annoConfigContainer;
 
+    @Autowired
+    private CacheExecutor cacheExecutor;
+
     @Around("cacheablePointCut()")
     public Object cacheable(ProceedingJoinPoint joinPoint) throws Exception {
         Method method = getSpecificMethod(joinPoint);
@@ -75,6 +75,8 @@ public class CacheHandler {
             context.setMethod(method);
             context.setTargetObject(joinPoint.getTarget());
             context.setInvoker(joinPoint::proceed);
+            context.setCacheBuilder(CacheBuilder.buildCache(context, cacheableConfig));
+            cacheExecutor.invokeCacheable(context);
 
             return context.getResult();
         } catch (Exception e) {
@@ -105,7 +107,9 @@ public class CacheHandler {
             context.setCacheAnnoConfig(evictAnnoConfig);
             context.setMethod(method);
             context.setTargetObject(joinPoint.getTarget());
+            context.setCacheBuilder(CacheBuilder.buildCache(context, evictAnnoConfig));
             context.setInvoker(joinPoint::proceed);
+            cacheExecutor.invokeCacheable(context);
 
             return context.getResult();
         } catch (Exception e) {
@@ -135,8 +139,10 @@ public class CacheHandler {
             context.setArgs(joinPoint.getArgs());
             context.setCacheAnnoConfig(updateAnnoConfig);
             context.setMethod(method);
+            context.setCacheBuilder(CacheBuilder.buildCache(context, updateAnnoConfig));
             context.setTargetObject(joinPoint.getTarget());
             context.setInvoker(joinPoint::proceed);
+            cacheExecutor.invokeCacheable(context);
 
             return context.getResult();
         } catch (Exception e) {

@@ -4,7 +4,7 @@ import com.kp.cache_core.core.Cache;
 import com.kp.kcache.anno_config.CacheAnnoConfig;
 
 import java.lang.reflect.Method;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 /**
  * description: CacheContext <br>
@@ -22,7 +22,7 @@ public class CacheContext {
 
     private Object result;
 
-    private Function<CacheAnnoConfig, Cache> cacheBuilder;
+    private BiFunction<CacheContext, CacheAnnoConfig, Cache> cacheBuilder;
 
     private CacheAnnoConfig cacheAnnoConfig;
 
@@ -60,11 +60,11 @@ public class CacheContext {
         this.result = result;
     }
 
-    public Function<CacheAnnoConfig, Cache> getCacheBuilder() {
+    public BiFunction<CacheContext, CacheAnnoConfig, Cache> getCacheBuilder() {
         return cacheBuilder;
     }
 
-    public void setCacheBuilder(Function<CacheAnnoConfig, Cache> cacheBuilder) {
+    public void setCacheBuilder(BiFunction<CacheContext, CacheAnnoConfig, Cache> cacheBuilder) {
         this.cacheBuilder = cacheBuilder;
     }
 

@@ -55,8 +55,8 @@ public interface Cache<K, V> extends Closeable {
      *
      * @param k
      */
-    default void put(K k, V v, long expireAfterWrite, TimeUnit timeUnit) {
-        PUT(k, v, expireAfterWrite, timeUnit);
+    default void put(K k, V v) {
+        PUT(k, v, config().getExpireAfterWriteInMillis(), TimeUnit.MILLISECONDS);
     }
 
     CacheConfig<K, V> config();
