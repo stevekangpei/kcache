@@ -24,6 +24,10 @@ public class CacheResult {
     public static final CacheResult FAIL_WITH_ILLEGAL_ARGUMENT = new CacheResult(ResultCode.FAIL, MSG_ILLEGAL_ARGUMENT);
 
 
+    public CompletionStage<ResultData> getFuture() {
+        return future;
+    }
+
     public CacheResult(ResultCode code, String msg) {
         this(CompletableFuture.completedFuture(new ResultData(code, msg, null)));
     }

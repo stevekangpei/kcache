@@ -30,6 +30,11 @@ public class MultiCacheGetResult<K, V> extends CacheResult {
         super(e);
     }
 
+
+    public Map<K, CacheValueHolder> getRes() {
+        return res;
+    }
+
     @Override
     public void fetchResult(ResultData resultData) {
         super.fetchResult(resultData);

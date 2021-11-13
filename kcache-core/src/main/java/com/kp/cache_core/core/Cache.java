@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 /**
  * JSR_107 API Style
@@ -61,6 +62,35 @@ public interface Cache<K, V> extends Closeable {
 
     CacheConfig<K, V> config();
 
+
+    default CacheResult PUT(K key, V value) {
+        if (key == null) {
+            return new CacheResult(ResultCode.FAIL, "Illegal Argument");
+        }
+        return PUT(key, value, config().getExpireAfterWriteInMillis(), TimeUnit.MILLISECONDS);
+    }
+
+    default CacheResult PUT_ALL(Map<K, V> map) {
+        if (map == null) {
+            return new CacheResult(ResultCode.FAIL, "Illegal Argument");
+        }
+        return PUT_ALL(map, config().getExpireAfterWriteInMillis(), TimeUnit.MILLISECONDS);
+    }
+
+
+    default void putAll(Map<K, V> map, long expireAfterWrite, TimeUnit timeUnit) {
+        PUT_ALL(map, expireAfterWrite, timeUnit);
+    }
+
+
+    default V computeIfAbsent(K key, Function<K, V> loader) {
+        return computeIfAbsent(key, loader, config().isCacheNullValues());
+    }
+
+    V computeIfAbsent(K key, Function<K, V> loader, boolean cacheNullWhenLoaderReturnNull);
+
+    V computeIfAbsent(K key, Function<K, V> loader, boolean cacheNullWhenLoaderReturnNull, long expireAfterWrite, TimeUnit timeUnit);
+
     /**
      * 内部接口的实现方法
      *
@@ -68,11 +98,6 @@ public interface Cache<K, V> extends Closeable {
      * @return
      */
     CacheResult PUT(K k, V v, long expireAfterWrite, TimeUnit timeUnit);
-
-    default void putAll(Map<K, V> map, long expireAfterWrite, TimeUnit timeUnit) {
-        PUT_ALL(map, expireAfterWrite, timeUnit);
-    }
-
 
 
     CacheResult PUT_ALL(Map<K, V> map, long expireAfterWrite, TimeUnit timeUnit);

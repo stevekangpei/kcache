@@ -32,7 +32,7 @@ public abstract class AbstractCacheBuilder implements ICacheBuilder, Cloneable {
          * 由于这个地方获取的是全局配置，防止后序修改。在这个地方做一次深拷贝。
          */
         CacheConfig configClone = (CacheConfig) config.clone();
-        Cache<K, V> cache = (Cache<K, V>) buildFunc.apply(config);
+        Cache<K, V> cache = (Cache<K, V>) buildFunc.apply(configClone);
         afterBuild();
         return cache;
     }

@@ -23,12 +23,17 @@ public class KryoDecoder extends AbstractDecoder {
     });
 
     @Override
-    public Object decode(byte[] value) throws Exception {
+    public Object decode(byte[] value) {
         ByteArrayInputStream bis = new ByteArrayInputStream(value);
         Input input = new Input(bis);
 
         Kryo kryo = kryoDecoderThreadLocal.get();
         kryo.setClassLoader(this.getClass().getClassLoader());
         return kryo.readClassAndObject(input);
+    }
+
+    @Override
+    public Object apply(byte[] bytes) {
+        return decode(bytes);
     }
 }

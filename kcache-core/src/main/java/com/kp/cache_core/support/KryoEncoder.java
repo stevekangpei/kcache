@@ -38,4 +38,9 @@ public class KryoEncoder extends AbstractEncoder {
         kryo.writeClassAndObject(output, object);
         return output.toBytes();
     }
+
+    @Override
+    public byte[] apply(Object o) {
+        return encode(o);
+    }
 }

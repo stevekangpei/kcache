@@ -1,5 +1,7 @@
 package com.kp.cache_core.support;
 
+import com.kp.cache_core.exception.CacheException;
+
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectOutputStream;
 
@@ -20,5 +22,14 @@ public class JavaEncoder extends AbstractEncoder {
         oos.writeObject(object);
         oos.flush();
         return bos.toByteArray();
+    }
+
+    @Override
+    public byte[] apply(Object o) {
+        try {
+            return encode(o);
+        } catch (Exception e) {
+            throw new CacheException("error encoding object, " + o.toString(), e);
+        }
     }
 }

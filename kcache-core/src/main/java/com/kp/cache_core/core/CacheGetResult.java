@@ -11,11 +11,6 @@ import java.util.concurrent.CompletionStage;
  */
 public class CacheGetResult<V> extends CacheResult {
 
-    //    public static CacheGetResult<V> GET_FAIL_WITH_ILLEGAL_ARGUMENTS;
-//    public final CacheGetResult<V> GET_FAIL_WITH_ILLEGAL_ARGUMENTS = new CacheGetResult<>(ResultCode.FAIL, MSG_ILLEGAL_ARGUMENT);
-    public final CacheGetResult<V> EXPIRED_VALUE = new CacheGetResult<>(ResultCode.EXPIRED, "expired");
-    public final CacheGetResult<V> NOT_EXIST_VALUE = new CacheGetResult<>(ResultCode.EXPIRED, "not exist");
-
     private V v;
     private CacheValueHolder holder;
 

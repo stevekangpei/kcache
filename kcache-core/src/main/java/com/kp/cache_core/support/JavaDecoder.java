@@ -1,5 +1,7 @@
 package com.kp.cache_core.support;
 
+import com.kp.cache_core.exception.CacheException;
+
 import java.io.ByteArrayInputStream;
 import java.io.ObjectInputStream;
 
@@ -18,5 +20,15 @@ public class JavaDecoder extends AbstractDecoder {
         ByteArrayInputStream is = new ByteArrayInputStream(value);
         ObjectInputStream ois = new ObjectInputStream(is);
         return ois.readObject();
+    }
+
+
+    @Override
+    public Object apply(byte[] bytes) {
+        try {
+            return decode(bytes);
+        } catch (Exception e) {
+            throw new CacheException("error decoding object", e);
+        }
     }
 }

@@ -11,6 +11,10 @@ import com.kp.cache_core.core.Cache;
  */
 public class MultiLevelCacheBuilder extends AbstractCacheBuilder {
 
+    public MultiLevelCacheBuilder() {
+        this.setBuildFunc(cacheConfig -> new MultiLevelCache((MultiLevelCacheConfig) cacheConfig));
+    }
+
     @Override
     public MultiLevelCacheConfig getConfig() {
         if (config == null)
