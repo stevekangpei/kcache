@@ -9,6 +9,6 @@ package com.kp.kcache.autoconfigure.condition;
 public class LettuceCacheCondition extends AbstractCacheCondition {
 
     public LettuceCacheCondition() {
-        super("redis.lettuce");
+        super("lettuce");
     }
 }

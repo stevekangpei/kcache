@@ -5,16 +5,14 @@ import com.kp.cache_core.cache_builder.external.ExternalCacheBuilder;
 import com.kp.cache_core.core.Cache;
 import com.kp.cache_core.exception.CacheException;
 import com.kp.cache_core.multi.MultiLevelCacheBuilder;
-import com.kp.kcache.anno_config.CacheAnnoConfig;
-import com.kp.kcache.anno_config.CacheEvictAnnoConfig;
-import com.kp.kcache.anno_config.CacheUpdateAnnoConfig;
-import com.kp.kcache.anno_config.CacheableAnnoConfig;
+import com.kp.kcache.anno_config.*;
 import com.kp.kcache.annos.CacheType;
 import com.kp.kcache.autoconfigure.support.GlobalCacheConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 
@@ -92,6 +90,12 @@ public class CacheBuilder {
             embeddedCacheBuilder.getConfig().setExpireAfterWriteInMillis(timeUnit.toMillis(cacheableAnnoConfig.getLocalExpire()));
         }
         embeddedCacheBuilder.getConfig().setCacheNullValues(cacheableAnnoConfig.isCacheNullValues());
+        if (cacheableAnnoConfig.getPenetrationConfig() != null) {
+            embeddedCacheBuilder.getConfig().setPenetrationProtect(true);
+            PenetrationConfig config = cacheableAnnoConfig.getPenetrationConfig();
+            embeddedCacheBuilder.getConfig().setPenetrationTimeOut(Duration.ofMillis(config.getTimeUnit()
+                    .toMillis(config.getTimeOut())));
+        }
         return embeddedCacheBuilder.buildCache();
     }
 
@@ -109,6 +113,12 @@ public class CacheBuilder {
             externalCacheBuilder.getConfig().setKeyPrefix(name);
         }
         externalCacheBuilder.getConfig().setCacheNullValues(config.isCacheNullValues());
+        if (config.getPenetrationConfig() != null) {
+            externalCacheBuilder.getConfig().setPenetrationProtect(true);
+            PenetrationConfig penetrationConfig = config.getPenetrationConfig();
+            externalCacheBuilder.getConfig().setPenetrationTimeOut(Duration.ofMillis(penetrationConfig.getTimeUnit()
+                    .toMillis(penetrationConfig.getTimeOut())));
+        }
         return externalCacheBuilder.buildCache();
     }
 }
