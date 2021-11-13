@@ -36,11 +36,11 @@
         cacheEvict（用于删除）
         cacheUpdate（用于更新）
     
-    ## Cache-Core 基本框架。
+ ## Cache-Core 基本框架。
     
-    ![core](kcache-core/imgs/cache-core.png)
+  ![core](kcache-core/imgs/cache-core.png)
     
-    ## KCache 基本使用
+ ## KCache 基本使用
     
     > 公共配置
         kcache
@@ -70,7 +70,7 @@
               ssl: false
               master: xxx
     
-    > 提供的注解
+ ## 提供的注解
     （1） @EnableCreateKCache 用于生成KCache 需要在main方法注明
     
     （2）@Cacheable 注解 （生成读缓存的实例）
