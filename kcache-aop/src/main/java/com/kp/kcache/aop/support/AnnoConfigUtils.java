@@ -51,6 +51,7 @@ public class AnnoConfigUtils {
         config.setName(cacheEvict.name());
         config.setCacheType(cacheEvict.cacheType());
         config.setKey(cacheEvict.key());
+        config.setMultiKeys(cacheEvict.multiKeys());
 
         return config;
     }
@@ -62,6 +63,7 @@ public class AnnoConfigUtils {
         config.setName(cacheUpdate.name());
         config.setCacheType(cacheUpdate.cacheType());
         config.setKey(cacheUpdate.key());
+        config.setMultiKeys(cacheUpdate.multiKeys());
 
         return config;
     }

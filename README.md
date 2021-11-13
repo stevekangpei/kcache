@@ -1,9 +1,8 @@
 # KCache
 
 这是一个多级缓存中间件，目的是为了整合进程内缓存和进程外缓存。比如说将高频访问的数据存储在进程内部。从而避免了网络开销。
-进程内的缓存支持 [LinkedHashMap] [Caffine]
-进程外缓存支持 [Redis]
-对于进程外缓存的访问支持[Jedis] [Lettuce] [SpringData]
+进程内的缓存支持 [Caffine]
+进程外缓存支持 [Redis] [Lettuce]
 
 核心原理和思想来自于Alibaba的JetCache项目。
 有对JetCache感兴趣的人，可以去查看JetCache的源代码。

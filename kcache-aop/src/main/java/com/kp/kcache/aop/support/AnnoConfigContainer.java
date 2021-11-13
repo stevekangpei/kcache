@@ -17,11 +17,11 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class AnnoConfigContainer {
 
-    private Map<String, CacheableAnnoConfig> cacheableAnnoConfigMap = new ConcurrentHashMap<>(256);
+    private final Map<String, CacheableAnnoConfig> cacheableAnnoConfigMap = new ConcurrentHashMap<>(256);
 
-    private Map<String, CacheEvictAnnoConfig> cacheEvictAnnoConfigMap = new ConcurrentHashMap<>(256);
+    private final Map<String, CacheEvictAnnoConfig> cacheEvictAnnoConfigMap = new ConcurrentHashMap<>(256);
 
-    private Map<String, CacheUpdateAnnoConfig> cacheUpdateAnnoConfigMap = new ConcurrentHashMap<>(256);
+    private final Map<String, CacheUpdateAnnoConfig> cacheUpdateAnnoConfigMap = new ConcurrentHashMap<>(256);
 
     public Map<String, CacheableAnnoConfig> cacheableAnnoConfigMapByArea = new ConcurrentHashMap<>(256);
 

@@ -52,6 +52,9 @@ public class CacheHandler {
     @Autowired
     private CacheExecutor cacheExecutor;
 
+    @Autowired
+    private CacheBuilder cacheBuilder;
+
     @Around("cacheablePointCut()")
     public Object cacheable(ProceedingJoinPoint joinPoint) throws Exception {
         Method method = getSpecificMethod(joinPoint);
@@ -75,12 +78,14 @@ public class CacheHandler {
             context.setMethod(method);
             context.setTargetObject(joinPoint.getTarget());
             context.setInvoker(joinPoint::proceed);
-            context.setCacheBuilder(CacheBuilder.buildCache());
+            context.setCacheBuilder(cacheBuilder.buildCache());
             cacheExecutor.invokeCacheable(context);
 
             return context.getResult();
         } catch (Exception e) {
             logger.error("cacheablePointCut error, method {}, ", method, e);
+            throw new CacheException("cacheablePointCut");
+        } catch (Throwable throwable) {
             throw new CacheException("cacheablePointCut");
         }
     }
@@ -107,16 +112,17 @@ public class CacheHandler {
             context.setCacheAnnoConfig(evictAnnoConfig);
             context.setMethod(method);
             context.setTargetObject(joinPoint.getTarget());
-            context.setCacheBuilder(CacheBuilder.buildCache());
+            context.setCacheBuilder(cacheBuilder.buildCache());
             context.setInvoker(joinPoint::proceed);
-            cacheExecutor.invokeCacheable(context);
+            cacheExecutor.invokeEvict(context);
 
             return context.getResult();
         } catch (Exception e) {
             logger.error("cacheEvictPointCut error, method {}, ", method, e);
             throw new CacheException("cacheEvictPointCut");
+        } catch (Throwable throwable) {
+            throw new CacheException("cacheEvictPointCut");
         }
-
     }
 
     @Around("cacheUpdatePointCut()")
@@ -139,17 +145,18 @@ public class CacheHandler {
             context.setArgs(joinPoint.getArgs());
             context.setCacheAnnoConfig(updateAnnoConfig);
             context.setMethod(method);
-            context.setCacheBuilder(CacheBuilder.buildCache());
+            context.setCacheBuilder(cacheBuilder.buildCache());
             context.setTargetObject(joinPoint.getTarget());
             context.setInvoker(joinPoint::proceed);
-            cacheExecutor.invokeCacheable(context);
+            cacheExecutor.invokeUpdate(context);
 
             return context.getResult();
         } catch (Exception e) {
             logger.error("cacheUpdatePointCut error, method {}, ", method, e);
             throw new CacheException("cacheUpdatePointCut");
+        } catch (Throwable throwable) {
+            throw new CacheException("cacheUpdatePointCut");
         }
-
     }
 
     private Method getSpecificMethod(ProceedingJoinPoint joinPoint) {

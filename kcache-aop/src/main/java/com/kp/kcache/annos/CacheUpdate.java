@@ -37,4 +37,6 @@ public @interface CacheUpdate {
     String key() default "";
 
     CacheType cacheType() default CacheType.BOTH;
+
+    boolean multiKeys() default false;
 }

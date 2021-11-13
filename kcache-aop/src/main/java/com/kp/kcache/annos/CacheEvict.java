@@ -38,4 +38,6 @@ public @interface CacheEvict {
 
     CacheType cacheType() default CacheType.BOTH;
 
+    boolean multiKeys() default false;
+
 }

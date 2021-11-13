@@ -77,6 +77,9 @@ public interface Cache<K, V> extends Closeable {
         return PUT_ALL(map, config().getExpireAfterWriteInMillis(), TimeUnit.MILLISECONDS);
     }
 
+    default void putAll(Map<K, V> map) {
+        PUT_ALL(map);
+    }
 
     default void putAll(Map<K, V> map, long expireAfterWrite, TimeUnit timeUnit) {
         PUT_ALL(map, expireAfterWrite, timeUnit);

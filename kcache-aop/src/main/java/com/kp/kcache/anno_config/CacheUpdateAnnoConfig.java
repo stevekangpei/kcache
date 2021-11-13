@@ -7,5 +7,14 @@ package com.kp.kcache.anno_config;
  * version: 1.0 <br>
  */
 public class CacheUpdateAnnoConfig extends CacheAnnoConfig {
+    private boolean multiKeys;
+
+    public boolean isMultiKeys() {
+        return multiKeys;
+    }
+
+    public void setMultiKeys(boolean multiKeys) {
+        this.multiKeys = multiKeys;
+    }
 
 }

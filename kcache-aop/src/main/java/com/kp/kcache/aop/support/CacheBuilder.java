@@ -67,7 +67,6 @@ public class CacheBuilder {
     }
 
     private Cache buildCache(CacheableAnnoConfig cacheableAnnoConfig, String name) {
-        Cache cache;
         if (cacheableAnnoConfig.getCacheType() == CacheType.LOCAL) {
             return buildLocalCache(cacheableAnnoConfig);
         } else if (cacheableAnnoConfig.getCacheType() == CacheType.REMOTE) {
